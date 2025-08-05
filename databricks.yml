@@ -1,0 +1,72 @@
+bundle:
+  name: insurance-customer-pipeline-azure
+
+include:
+  - resources/*.yml
+
+variables:
+  databricks_host:
+    description: "Azure Databricks workspace URL"
+    default: "https://adb-3328355783918896.16.azuredatabricks.net"
+  catalog:
+    description: "Unity Catalog name"
+    default: insurance_demo_dev
+  schema:
+    description: "Schema name within catalog"
+    default: customers
+  external_location:
+    description: "Unity Catalog external location name for Azure Blob Storage"
+    default: "demodata"
+  azure_connection_name:
+    description: "External connection name for Azure Blob Storage"
+    default: "demodata"
+  azure_customer_path:
+    description: "Unity Catalog external location path to customer data"
+    default: "${var.external_location}/insurance/${bundle.target}/customers/"
+  notification_email:
+    description: "Email address for pipeline notifications"
+    default: "your-email@company.com"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${var.databricks_host}
+      profile: azure-insurance
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: insurance_demo_dev
+      schema: customers
+      external_location: "demodata"
+      azure_connection_name: "demodata"
+      azure_customer_path: "${var.external_location}/insurance/dev/customers/"
+      notification_email: "your-email@company.com"
+      
+  staging:
+    mode: development
+    workspace:
+      host: ${var.databricks_host}
+      profile: azure-insurance
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: insurance_demo_staging
+      schema: customers
+      external_location: "azure_blob_customer_data_staging"
+      azure_connection_name: "azure_blob_customer_data_staging"
+      azure_customer_path: "${var.external_location}/insurance/staging/customers/"
+      notification_email: "your-email@company.com"
+      
+  prod:
+    mode: production
+    workspace:
+      host: ${var.databricks_host}
+      profile: azure-insurance
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: insurance_demo_prod
+      schema: customers
+      external_location: "azure_blob_customer_data_prod"
+      azure_connection_name: "azure_blob_customer_data_prod"
+      azure_customer_path: "${var.external_location}/insurance/prod/customers/"
+      notification_email: "your-email@company.com"

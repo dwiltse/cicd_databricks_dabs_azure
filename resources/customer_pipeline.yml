@@ -1,0 +1,48 @@
+resources:
+  # Lakeflow Declarative Pipeline for Customer Data Processing
+  pipelines:
+    customer_dlt_pipeline:
+      name: "customer-data-pipeline-${bundle.target}"
+      catalog: "${var.catalog}"
+      target: "${var.schema}"
+      libraries:
+        - notebook:
+            path: ../src/pipelines/customer_azure_pipeline.py
+      configuration:
+        catalog: "${var.catalog}"
+        schema: "${var.schema}"
+        azure_external_location: "${var.external_location}"
+        source_path: "${var.azure_customer_path}"
+      continuous: false
+      development: true
+      photon: true
+      channel: CURRENT
+      serverless: true
+
+  # Job Wrapper for Pipeline Orchestration (Enhanced Pattern from Examples)
+  jobs:
+    customer_pipeline_job:
+      name: "customer-pipeline-job-${bundle.target}"
+      email_notifications:
+        on_success:
+          - "${var.notification_email}"
+        on_failure:
+          - "${var.notification_email}"
+      tasks:
+        - task_key: run_customer_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.customer_dlt_pipeline.id}
+            full_refresh: false
+      parameters:
+        - name: catalog_name
+          default: "${var.catalog}"
+        - name: schema_name
+          default: "${var.schema}"
+        - name: environment_target
+          default: "${bundle.target}"
+        - name: azure_connection
+          default: "${var.azure_connection_name}"
+      timeout_seconds: 3600
+      max_concurrent_runs: 1
+      queue:
+        enabled: true

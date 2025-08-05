@@ -1,0 +1,58 @@
+###########################################################################################
+# LAB SOLUTION EXAMPLE               
+###########################################################################################
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.         #
+###########################################################################################
+
+################
+# Bundle name  
+################
+bundle:                       # Required
+  name: demo02_lab_bundle     # Required
+
+
+############################################################################
+# RESOURCES
+# - These are the default job and pipeline settings (currently only a job).
+# TO DO: Paste your YAML configuration below from the job you created using the UI.
+# TO DO: Make the required modifications specified in the notebook.
+############################################################################
+resources:
+  jobs:
+    lab02_job_peter:    ## <--- Rename this to whatever you want 
+      name: lab02_job_peter
+      email_notifications:
+        on_success:
+          - fake@databricks.com
+      tasks:
+        - task_key: create_nyc_tables
+          notebook_task:
+            notebook_path: ./src/our_project_code.sql
+            source: WORKSPACE
+          existing_cluster_id: 0205-212942-5t9srjjck     ## <--- Change this to your cluster ID
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: labuser1234_1_dev    ## <--- Change this to your catalog_1_dev name
+        - name: display_target
+          default: Development
+
+##############################################################################################
+# TARGET DEPLOYMENT ENVIRONMENTS
+# - These are the targets to use for deployments and workflow runs. 
+# - One and only one of these targets can be set to "default: true".
+# - TO DO: Complete the dev target below!
+##############################################################################################
+targets:
+    
+  # Add your configuration for the 'dev' target here.
+  dev:
+    # Make sure to specify the deployment details for the development environment.
+    mode: development
+
+    # Ensure the 'default: true' flag is set for the target you wish to deploy by default.
+    default: true
+
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
