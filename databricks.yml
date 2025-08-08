@@ -14,6 +14,9 @@ variables:
   schema:
     description: "Schema name within catalog"
     default: customers
+  developer_schema:
+    description: "Per-developer schema pattern (dev only)"
+    default: "dev_${workspace.current_user.short_name}"
   external_location:
     description: "Unity Catalog external location name for Azure Blob Storage"
     default: "demodata"
@@ -33,40 +36,32 @@ targets:
     default: true
     workspace:
       host: ${var.databricks_host}
-      profile: azure-insurance
       root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
     variables:
       catalog: insurance_demo_dev
-      schema: customers
-      external_location: "demodata"
-      azure_connection_name: "demodata"
-      azure_customer_path: "${var.external_location}/insurance/dev/customers/"
-      notification_email: "your-email@company.com"
+  schema: ${var.developer_schema}
+  notification_email: "your-email@company.com"
       
   staging:
     mode: development
     workspace:
       host: ${var.databricks_host}
-      profile: azure-insurance
-      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+  root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     variables:
       catalog: insurance_demo_staging
       schema: customers
       external_location: "azure_blob_customer_data_staging"
       azure_connection_name: "azure_blob_customer_data_staging"
-      azure_customer_path: "${var.external_location}/insurance/staging/customers/"
       notification_email: "your-email@company.com"
       
   prod:
     mode: production
     workspace:
       host: ${var.databricks_host}
-      profile: azure-insurance
-      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+  root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
     variables:
       catalog: insurance_demo_prod
       schema: customers
       external_location: "azure_blob_customer_data_prod"
       azure_connection_name: "azure_blob_customer_data_prod"
-      azure_customer_path: "${var.external_location}/insurance/prod/customers/"
       notification_email: "your-email@company.com"
