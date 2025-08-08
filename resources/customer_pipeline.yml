@@ -18,6 +18,11 @@ resources:
       photon: true
       channel: CURRENT
       serverless: true
+      permissions:
+        - level: CAN_MANAGE
+          group_name: "data-engineers"
+        - level: CAN_VIEW
+          group_name: "data-analysts"
 
   # Job Wrapper for Pipeline Orchestration (Enhanced Pattern from Examples)
   jobs:
@@ -32,7 +37,7 @@ resources:
         - task_key: run_customer_pipeline
           pipeline_task:
             pipeline_id: ${resources.pipelines.customer_dlt_pipeline.id}
-            full_refresh: false
+            full_refresh: ${var.allow_full_refresh}
       parameters:
         - name: catalog_name
           default: "${var.catalog}"
@@ -42,7 +47,14 @@ resources:
           default: "${bundle.target}"
         - name: azure_connection
           default: "${var.azure_connection_name}"
+        - name: allow_full_refresh
+          default: "${var.allow_full_refresh}"
       timeout_seconds: 3600
       max_concurrent_runs: 1
       queue:
         enabled: true
+      permissions:
+        - level: CAN_MANAGE
+          group_name: "data-engineers"
+        - level: CAN_VIEW
+          group_name: "data-analysts"
