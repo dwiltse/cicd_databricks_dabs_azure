@@ -18,6 +18,14 @@ resources:
       photon: true
       channel: CURRENT
       serverless: true
+      # Team assignment and permissions for pipeline access
+      permissions:
+        - level: CAN_MANAGE
+          service_principal_name: "${var.service_principal_name}"
+        - level: CAN_VIEW
+          group_name: "${var.engineering_group}"
+        - level: CAN_MANAGE
+          group_name: "${var.admin_group}"
 
   # Job Wrapper for Pipeline Orchestration (Enhanced Pattern from Examples)
   jobs:
@@ -46,3 +54,11 @@ resources:
       max_concurrent_runs: 1
       queue:
         enabled: true
+      # Team assignment and permissions for job execution
+      permissions:
+        - level: CAN_MANAGE
+          service_principal_name: "${var.service_principal_name}"
+        - level: CAN_VIEW
+          group_name: "${var.engineering_group}"
+        - level: CAN_MANAGE_RUN
+          group_name: "${var.engineering_group}"
